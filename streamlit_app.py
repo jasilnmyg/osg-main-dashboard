@@ -418,7 +418,7 @@ with tab1:
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_gray'], 'num_format': '0.00%'
                     }),
                     'total_row': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['mint_green'],
+                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green']
                     }),
