@@ -419,13 +419,13 @@ with tab1:
                     }),
                     'total_row': workbook.add_format({
                         'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green']
+                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
+                        'border': 2, 'border_color': colors_palette['accent_purple']
                     }),
                     'total_label': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['mint_green'],
-                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green']
+                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
+                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
+                        'border': 2, 'border_color': colors_palette['accent_purple']
                     }),
                     'rbm_title': workbook.add_format({
                         'bold': True, 'font_size': 18, 'font_color': colors_palette['white'],
@@ -471,12 +471,12 @@ with tab1:
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '0.00%'
                     }),
                     'rbm_total': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['mint_green'],
+                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green']
                     }),
                     'rbm_total_label': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['mint_green'],
+                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green']
                     }),
@@ -499,7 +499,7 @@ with tab1:
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '₹#,##0.00'
                     }),
                     'asp_total': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['mint_green'],
+                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green'], 'num_format': '₹#,##0.00'
                     })
@@ -507,7 +507,7 @@ with tab1:
 
                 # Set IST timezone
                 ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime(2025, 7, 7, 16, 36, tzinfo=ist)  # 04:36 PM IST, July 07, 2025
+                ist_time = datetime.now(ist)
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
@@ -577,11 +577,11 @@ with tab1:
                 worksheet.write(total_row, 1, all_data['FTD Count'].sum(), formats['total_row'])
                 worksheet.write(total_row, 2, all_data['FTD Value'].sum(), formats['total_row'])
                 total_ftd_conversion = round((all_data['FTD Value'].sum() / all_data['Product_FTD_Amount'].sum()) * 100, 2) if all_data['Product_FTD_Amount'].sum() != 0 else 0
-                worksheet.write(total_row, 3, total_ftd_conversion / 100, formats['conversion_low'] if total_ftd_conversion < 2 else formats['conversion_format'])
+                worksheet.write(total_row, 3, total_ftd_conversion / 100, formats['conversion_low'] if total_ftd_conversion < 2 else formats['total_row'])
                 worksheet.write(total_row, 4, all_data['MTD Count'].sum(), formats['total_row'])
                 worksheet.write(total_row, 5, all_data['MTD Value'].sum(), formats['total_row'])
                 total_mtd_conversion = round((all_data['MTD Value'].sum() / all_data['Product_MTD_Amount'].sum()) * 100, 2) if all_data['Product_MTD_Amount'].sum() != 0 else 0
-                worksheet.write(total_row, 6, total_mtd_conversion / 100, formats['conversion_low'] if total_mtd_conversion < 2 else formats['conversion_format'])
+                worksheet.write(total_row, 6, total_mtd_conversion / 100, formats['conversion_low'] if total_mtd_conversion < 2 else formats['total_row'])
                 worksheet.write(total_row, 7, all_data['PREV MONTH SALE'].sum(), formats['total_row'])
                 total_diff = round(((all_data['MTD Value'].sum() - all_data['PREV MONTH SALE'].sum()) / all_data['PREV MONTH SALE'].sum()) * 100, 2) if all_data['PREV MONTH SALE'].sum() != 0 else 0
                 worksheet.write(total_row, 8, f"{total_diff}%", formats['total_row'])
