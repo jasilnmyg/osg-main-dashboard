@@ -420,7 +420,7 @@ with tab1:
                     'total_row': workbook.add_format({
                         'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['accent_purple'], 'num_format': '0.00'
+                        'border': 2, 'border_color': colors_palette['accent_purple']
                     }),
                     'total_label': workbook.add_format({
                         'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
@@ -473,7 +473,7 @@ with tab1:
                     'rbm_total': workbook.add_format({
                         'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green'], 'num_format': '0.00%'
+                        'border': 2, 'border_color': colors_palette['mint_green']
                     }),
                     'rbm_total_label': workbook.add_format({
                         'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
@@ -669,11 +669,11 @@ with tab1:
                     rbm_ws.write(total_row, 1, rbm_data['FTD Count'].sum(), formats['rbm_total'])
                     rbm_ws.write(total_row, 2, rbm_data['FTD Value'].sum(), formats['rbm_total'])
                     rbm_total_ftd_conversion = round((rbm_data['FTD Value'].sum() / rbm_data['Product_FTD_Amount'].sum()) * 100, 2) if rbm_data['Product_FTD_Amount'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 3, rbm_total_ftd_conversion / 100, formats['rbm_conversion_low'] if rbm_total_ftd_conversion < 2 else formats['rbm_total'])
+                    rbm_ws.write(total_row, 3, rbm_total_ftd_conversion / 100, formats['rbm_conversion_low'] if rbm_total_ftd_conversion < 2 else formats['rbm_conversion_format'])
                     rbm_ws.write(total_row, 4, rbm_data['MTD Count'].sum(), formats['rbm_total'])
                     rbm_ws.write(total_row, 5, rbm_data['MTD Value'].sum(), formats['rbm_total'])
                     rbm_total_mtd_conversion = round((rbm_data['MTD Value'].sum() / rbm_data['Product_MTD_Amount'].sum()) * 100, 2) if rbm_data['Product_MTD_Amount'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 6, rbm_total_mtd_conversion / 100, formats['rbm_conversion_low'] if rbm_total_mtd_conversion < 2 else formats['rbm_total'])
+                    rbm_ws.write(total_row, 6, rbm_total_mtd_conversion / 100, formats['rbm_conversion_low'] if rbm_total_mtd_conversion < 2 else formats['rbm_conversion_format'])
                     rbm_ws.write(total_row, 7, rbm_data['PREV MONTH SALE'].sum(), formats['rbm_total'])
                     total_prev = rbm_data['PREV MONTH SALE'].sum()
                     total_curr = rbm_data['MTD Value'].sum()
