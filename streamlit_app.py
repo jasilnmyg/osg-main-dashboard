@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import re
+from datetime import datetime
+import pytz
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, PageBreak, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
@@ -523,7 +525,9 @@ with tab1:
                     worksheet.set_column(i, i, column_widths[i])
 
                 worksheet.merge_range(0, 0, 0, len(headers) - 1, "OSG All Stores Sales Report", formats['title'])
-                worksheet.merge_range(1, 0, 1, len(headers) - 1, f"Report Generated: {datetime.now().strftime('%d %B %Y %I:%M %p IST')}", formats['subtitle'])
+                ist = pytz.timezone('Asia/Kolkata')
+                ist_time = datetime.now(ist)
+                worksheet.merge_range(1, 0, 1, len(headers) - 1, f"Report Generated: {ist_time.strftime('%d %B %Y %I:%M %p IST')}", formats['subtitle'])
 
                 total_stores = len(all_data)
                 active_stores = len(all_data[all_data['FTD Count'] > 0])
