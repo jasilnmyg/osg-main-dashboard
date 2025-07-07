@@ -507,7 +507,7 @@ with tab1:
 
                 # Set IST timezone
                 ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime.now(ist)
+                ist_time = datetime(2025, 7, 7, 16, 25, tzinfo=ist)  # 04:25 PM IST, July 07, 2025
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
@@ -577,11 +577,11 @@ with tab1:
                 worksheet.write(total_row, 1, all_data['FTD Count'].sum(), formats['total_row'])
                 worksheet.write(total_row, 2, all_data['FTD Value'].sum(), formats['total_row'])
                 total_ftd_conversion = round((all_data['FTD Value'].sum() / all_data['Product_FTD_Amount'].sum()) * 100, 2) if all_data['Product_FTD_Amount'].sum() != 0 else 0
-                worksheet.write(total_row, 3, total_ftd_conversion / 100, formats['conversion_low'] if total_ftd_conversion < 2 else formats['total_row'])
+                worksheet.write(total_row, 3, total_ftd_conversion / 100, formats['conversion_low'] if total_ftd_conversion < 2 else formats['conversion_format'])
                 worksheet.write(total_row, 4, all_data['MTD Count'].sum(), formats['total_row'])
                 worksheet.write(total_row, 5, all_data['MTD Value'].sum(), formats['total_row'])
                 total_mtd_conversion = round((all_data['MTD Value'].sum() / all_data['Product_MTD_Amount'].sum()) * 100, 2) if all_data['Product_MTD_Amount'].sum() != 0 else 0
-                worksheet.write(total_row, 6, total_mtd_conversion / 100, formats['conversion_low'] if total_mtd_conversion < 2 else formats['total_row'])
+                worksheet.write(total_row, 6, total_mtd_conversion / 100, formats['conversion_low'] if total_mtd_conversion < 2 else formats['conversion_format'])
                 worksheet.write(total_row, 7, all_data['PREV MONTH SALE'].sum(), formats['total_row'])
                 total_diff = round(((all_data['MTD Value'].sum() - all_data['PREV MONTH SALE'].sum()) / all_data['PREV MONTH SALE'].sum()) * 100, 2) if all_data['PREV MONTH SALE'].sum() != 0 else 0
                 worksheet.write(total_row, 8, f"{total_diff}%", formats['total_row'])
