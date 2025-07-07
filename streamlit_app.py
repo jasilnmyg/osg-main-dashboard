@@ -418,14 +418,14 @@ with tab1:
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_gray'], 'num_format': '0.00%'
                     }),
                     'total_row': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['accent_purple']
+                        'bold': True, 'font_size': 11, 'font_color': colors_palette['mint_green'],
+                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
+                        'border': 2, 'border_color': colors_palette['mint_green']
                     }),
                     'total_label': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['accent_purple']
+                        'bold': True, 'font_size': 11, 'font_color': colors_palette['mint_green'],
+                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
+                        'border': 2, 'border_color': colors_palette['mint_green']
                     }),
                     'rbm_title': workbook.add_format({
                         'bold': True, 'font_size': 18, 'font_color': colors_palette['white'],
@@ -471,12 +471,12 @@ with tab1:
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '0.00%'
                     }),
                     'rbm_total': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
+                        'bold': True, 'font_size': 12, 'font_color': colors_palette['mint_green'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green']
                     }),
                     'rbm_total_label': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
+                        'bold': True, 'font_size': 12, 'font_color': colors_palette['mint_green'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green']
                     }),
@@ -499,7 +499,7 @@ with tab1:
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '₹#,##0.00'
                     }),
                     'asp_total': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
+                        'bold': True, 'font_size': 12, 'font_color': colors_palette['mint_green'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
                         'border': 2, 'border_color': colors_palette['mint_green'], 'num_format': '₹#,##0.00'
                     })
@@ -507,7 +507,7 @@ with tab1:
 
                 # Set IST timezone
                 ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime(2025, 7, 7, 16, 25, tzinfo=ist)  # 04:25 PM IST, July 07, 2025
+                ist_time = datetime(2025, 7, 7, 16, 36, tzinfo=ist)  # 04:36 PM IST, July 07, 2025
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
