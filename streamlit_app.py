@@ -340,349 +340,167 @@ with tab1:
             excel_output = BytesIO()
             with pd.ExcelWriter(excel_output, engine='xlsxwriter') as writer:
                 workbook = writer.book
-
-                colors_palette = {
-                    'primary_blue': '#1E3A8A',
-                    'light_blue': '#DBEAFE',
-                    'success_green': '#065F46',
-                    'light_green': '#D1FAE5',
-                    'warning_orange': '#EA580C',
-                    'light_orange': '#FED7AA',
-                    'danger_red': '#DC2626',
-                    'light_red': '#FEE2E2',
-                    'accent_purple': '#7C3AED',
-                    'light_purple': '#EDE9FE',
-                    'neutral_gray': '#6B7280',
-                    'light_gray': '#F9FAFB',
-                    'white': '#FFFFFF',
-                    'dark_blue': '#0F172A',
-                    'mint_green': '#10B981',
-                    'light_mint': '#ECFDF5',
-                    'royal_blue': '#3B82F6',
-                    'light_royal': '#EBF8FF'
-                }
-
-                formats = {
-                    'title': workbook.add_format({
-                        'bold': True, 'font_size': 16, 'font_color': colors_palette['primary_blue'],
-                        'align': 'center', 'valign': 'vcenter', 'bg_color': colors_palette['white'],
-                        'border': 1, 'border_color': colors_palette['primary_blue']
-                    }),
-                    'subtitle': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['neutral_gray'],
-                        'align': 'center', 'valign': 'vcenter', 'italic': True
-                    }),
-                    'header_main': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['primary_blue'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['primary_blue'], 'text_wrap': True
-                    }),
-                    'header_secondary': workbook.add_format({
-                        'bold': True, 'font_size': 10, 'font_color': colors_palette['primary_blue'],
-                        'bg_color': colors_palette['light_blue'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['primary_blue']
-                    }),
-                    'data_normal': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['white']
-                    }),
-                    'data_alternate': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_gray']
-                    }),
-                    'data_store_name': workbook.add_format({
-                        'font_size': 10, 'bold': True, 'align': 'left', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['white'], 'indent': 1
-                    }),
-                    'data_store_name_alt': workbook.add_format({
-                        'font_size': 10, 'bold': True, 'align': 'left', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_gray'], 'indent': 1
-                    }),
-                    'conversion_low': workbook.add_format({
-                        'font_size': 10, 'font_color': colors_palette['danger_red'], 'bg_color': colors_palette['light_red'],
-                        'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['danger_red'], 'num_format': '0.00%', 'bold': True
-                    }),
-                    'conversion_format': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'num_format': '0.00%'
-                    }),
-                    'conversion_format_alt': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_gray'], 'num_format': '0.00%'
-                    }),
-                    'total_row': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['accent_purple']
-                    }),
-                    'total_label': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['accent_purple']
-                    }),
-                    'rbm_title': workbook.add_format({
-                        'bold': True, 'font_size': 18, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['dark_blue'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['dark_blue']
-                    }),
-                    'rbm_subtitle': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['dark_blue'],
-                        'bg_color': colors_palette['light_royal'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['royal_blue'], 'italic': True
-                    }),
-                    'rbm_header': workbook.add_format({
-                        'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['royal_blue'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['royal_blue'], 'text_wrap': True
-                    }),
-                    'rbm_data_normal': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['white']
-                    }),
-                    'rbm_data_alternate': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal']
-                    }),
-                    'rbm_store_name': workbook.add_format({
-                        'font_size': 10, 'bold': True, 'align': 'left', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['white'], 'indent': 1
-                    }),
-                    'rbm_store_name_alt': workbook.add_format({
-                        'font_size': 10, 'bold': True, 'align': 'left', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'indent': 1
-                    }),
-                    'rbm_conversion_low': workbook.add_format({
-                        'font_size': 10, 'font_color': colors_palette['danger_red'], 'bg_color': colors_palette['light_red'],
-                        'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['danger_red'], 'num_format': '0.00%', 'bold': True
-                    }),
-                    'rbm_conversion_format': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'num_format': '0.00%'
-                    }),
-                    'rbm_conversion_format_alt': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '0.00%'
-                    }),
-                    'rbm_total': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green']
-                    }),
-                    'rbm_total_label': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green']
-                    }),
-                    'rbm_summary': workbook.add_format({
-                        'bold': True, 'font_size': 10, 'font_color': colors_palette['royal_blue'],
-                        'bg_color': colors_palette['light_royal'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['royal_blue']
-                    }),
-                    'rbm_performance': workbook.add_format({
-                        'bold': True, 'font_size': 10, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['accent_purple']
-                    }),
-                    'asp_format': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'num_format': '₹#,##0.00'
-                    }),
-                    'asp_format_alt': workbook.add_format({
-                        'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '₹#,##0.00'
-                    }),
-                    'asp_total': workbook.add_format({
-                        'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
-                        'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green'], 'num_format': '₹#,##0.00'
-                    })
-                }
+                
+                # Define formats
+                header_format = workbook.add_format({
+                    'bold': True,
+                    'text_wrap': True,
+                    'valign': 'top',
+                    'fg_color': '#4472C4',
+                    'font_color': 'white',
+                    'border': 1
+                })
+                
+                number_format = workbook.add_format({'num_format': '#,##0'})
+                percentage_format = workbook.add_format({'num_format': '0.00%'})
+                currency_format = workbook.add_format({'num_format': '₹#,##0.00'})
+                store_name_format = workbook.add_format({'align': 'left'})
+                total_format = workbook.add_format({
+                    'bold': True,
+                    'fg_color': '#70AD47',
+                    'font_color': 'white',
+                    'border': 1,
+                    'num_format': '#,##0'
+                })
+                low_conversion_format = workbook.add_format({
+                    'bold': True,
+                    'font_color': 'red',
+                    'num_format': '0.00%'
+                })
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
                 worksheet = workbook.add_worksheet("All Stores")
-
-                # Dynamically adjust column widths based on content
-                column_widths = {}
-                headers = ['Store Name', 'FTD Count', 'FTD Value', 'FTD Value Conversion', 'MTD Count', 'MTD Value', 'MTD Value Conversion', 'PREV MONTH SALE', 'DIFF %', 'ASP']
-                for col_num, header in enumerate(headers):
-                    max_len = max(all_data['Store'].astype(str).map(len).max(), len(header)) + 2
-                    column_widths[col_num] = max_len if max_len < 30 else 30  # Cap width at 30
-                for col_num, width in column_widths.items():
-                    worksheet.set_column(col_num, col_num, width)
-
-                worksheet.merge_range(0, 0, 0, 9, "OSG All Stores Sales Report", formats['title'])
-                worksheet.merge_range(1, 0, 1, 9, f"Report Generated: {datetime.now().strftime('%d %B %Y')}", formats['subtitle'])
-
-                total_stores = len(all_data)
-                active_stores = len(all_data[all_data['FTD Count'] > 0])
-                inactive_stores = total_stores - active_stores
-
-                worksheet.merge_range(3, 0, 3, 1, "📊 SUMMARY", formats['header_secondary'])
-                worksheet.merge_range(3, 2, 3, 9, f"Total: {total_stores} | Active: {active_stores} | Inactive: {inactive_stores}", formats['data_normal'])
-
-                # Headers
-                for col, header in enumerate(headers):
-                    worksheet.write(5, col, header, formats['header_main'])
-
-                for row_idx, (_, row) in enumerate(all_data.iterrows(), start=6):
-                    is_alternate = (row_idx - 6) % 2 == 1
-                    store_format = formats['data_store_name_alt'] if is_alternate else formats['data_store_name']
-                    worksheet.write(row_idx, 0, row['Store'], store_format)
-
-                    data_format = formats['data_alternate'] if is_alternate else formats['data_normal']
-                    worksheet.write(row_idx, 1, int(row['FTD Count']), data_format)
-                    worksheet.write(row_idx, 2, int(row['FTD Value']), data_format)
-
-                    ftd_conversion = row['FTD Value Conversion']
-                    conversion_format = formats['conversion_format_alt'] if is_alternate else formats['conversion_format']
-                    if ftd_conversion < 2:
-                        worksheet.write(row_idx, 3, ftd_conversion / 100, formats['conversion_low'])
+                
+                # Set column widths
+                worksheet.set_column('A:A', 25)  # Store name
+                worksheet.set_column('B:J', 15)  # Other columns
+                
+                # Write headers
+                headers = ['Store', 'FTD Count', 'FTD Value', 'FTD Value Conversion', 
+                          'MTD Count', 'MTD Value', 'MTD Value Conversion', 
+                          'PREV MONTH SALE', 'DIFF %', 'ASP']
+                worksheet.write_row(0, 0, headers, header_format)
+                
+                # Write data
+                for row_num, (_, row) in enumerate(all_data.iterrows(), start=1):
+                    worksheet.write_string(row_num, 0, row['Store'], store_name_format)
+                    worksheet.write_number(row_num, 1, row['FTD Count'], number_format)
+                    worksheet.write_number(row_num, 2, row['FTD Value'], number_format)
+                    
+                    # Apply conditional formatting for conversion rates
+                    if row['FTD Value Conversion'] < 2:
+                        worksheet.write_number(row_num, 3, row['FTD Value Conversion']/100, low_conversion_format)
                     else:
-                        worksheet.write(row_idx, 3, ftd_conversion / 100, conversion_format)
-
-                    worksheet.write(row_idx, 4, int(row['MTD Count']), data_format)
-                    worksheet.write(row_idx, 5, int(row['MTD Value']), data_format)
-
-                    mtd_conversion = row['MTD Value Conversion']
-                    if mtd_conversion < 2:
-                        worksheet.write(row_idx, 6, mtd_conversion / 100, formats['conversion_low'])
+                        worksheet.write_number(row_num, 3, row['FTD Value Conversion']/100, percentage_format)
+                        
+                    worksheet.write_number(row_num, 4, row['MTD Count'], number_format)
+                    worksheet.write_number(row_num, 5, row['MTD Value'], number_format)
+                    
+                    if row['MTD Value Conversion'] < 2:
+                        worksheet.write_number(row_num, 6, row['MTD Value Conversion']/100, low_conversion_format)
                     else:
-                        worksheet.write(row_idx, 6, mtd_conversion / 100, conversion_format)
-
-                    worksheet.write(row_idx, 7, int(row['PREV MONTH SALE']), data_format)
-                    worksheet.write(row_idx, 8, f"{row['DIFF %']}%", data_format)
-
-                    asp_format = formats['asp_format_alt'] if is_alternate else formats['asp_format']
-                    worksheet.write(row_idx, 9, row['ASP'], asp_format)
-
-                total_row = len(all_data) + 7
-                worksheet.write(total_row, 0, '🎯 TOTAL', formats['total_label'])
-                worksheet.write(total_row, 1, all_data['FTD Count'].sum(), formats['total_row'])
-                worksheet.write(total_row, 2, all_data['FTD Value'].sum(), formats['total_row'])
-                total_ftd_conversion = round((all_data['FTD Value'].sum() / all_data['Product_FTD_Amount'].sum()) * 100, 2) if all_data['Product_FTD_Amount'].sum() != 0 else 0
-                worksheet.write(total_row, 3, total_ftd_conversion / 100, formats['conversion_low'] if total_ftd_conversion < 2 else formats['total_row'])
-                worksheet.write(total_row, 4, all_data['MTD Count'].sum(), formats['total_row'])
-                worksheet.write(total_row, 5, all_data['MTD Value'].sum(), formats['total_row'])
-                total_mtd_conversion = round((all_data['MTD Value'].sum() / all_data['Product_MTD_Amount'].sum()) * 100, 2) if all_data['Product_MTD_Amount'].sum() != 0 else 0
-                worksheet.write(total_row, 6, total_mtd_conversion / 100, formats['conversion_low'] if total_mtd_conversion < 2 else formats['total_row'])
-                worksheet.write(total_row, 7, all_data['PREV MONTH SALE'].sum(), formats['total_row'])
-                total_diff = round(((all_data['MTD Value'].sum() - all_data['PREV MONTH SALE'].sum()) / all_data['PREV MONTH SALE'].sum()) * 100, 2) if all_data['PREV MONTH SALE'].sum() != 0 else 0
-                worksheet.write(total_row, 8, f"{total_diff}%", formats['total_row'])
-                total_asp = round(all_data['MTD Value'].sum() / all_data['MTD Count'].sum(), 2) if all_data['MTD Count'].sum() != 0 else 0
-                worksheet.write(total_row, 9, total_asp, formats['asp_total'])
-
-                if len(all_data) > 0:
-                    top_performer = all_data.iloc[0]
-                    insights_row = total_row + 2
-                    worksheet.merge_range(insights_row, 0, insights_row, 9,
-                                        f"🏆 Top Performer: {top_performer['Store']} (₹{int(top_performer['MTD Value']):,})",
-                                        formats['data_normal'])
+                        worksheet.write_number(row_num, 6, row['MTD Value Conversion']/100, percentage_format)
+                        
+                    worksheet.write_number(row_num, 7, row['PREV MONTH SALE'], number_format)
+                    worksheet.write_number(row_num, 8, row['DIFF %']/100, percentage_format)
+                    worksheet.write_number(row_num, 9, row['ASP'], currency_format)
+                
+                # Add totals row
+                total_row = len(all_data) + 1
+                worksheet.write_string(total_row, 0, 'TOTAL', total_format)
+                worksheet.write_formula(total_row, 1, f'=SUM(B2:B{total_row})', total_format)
+                worksheet.write_formula(total_row, 2, f'=SUM(C2:C{total_row})', total_format)
+                
+                # Calculate total conversion rates
+                total_ftd_conversion = all_data['FTD Value'].sum() / all_data['Product_FTD_Amount'].sum() if all_data['Product_FTD_Amount'].sum() != 0 else 0
+                worksheet.write_number(total_row, 3, total_ftd_conversion, 
+                                     low_conversion_format if total_ftd_conversion < 0.02 else percentage_format)
+                
+                worksheet.write_formula(total_row, 4, f'=SUM(E2:E{total_row})', total_format)
+                worksheet.write_formula(total_row, 5, f'=SUM(F2:F{total_row})', total_format)
+                
+                total_mtd_conversion = all_data['MTD Value'].sum() / all_data['Product_MTD_Amount'].sum() if all_data['Product_MTD_Amount'].sum() != 0 else 0
+                worksheet.write_number(total_row, 6, total_mtd_conversion, 
+                                     low_conversion_format if total_mtd_conversion < 0.02 else percentage_format)
+                
+                worksheet.write_formula(total_row, 7, f'=SUM(H2:H{total_row})', total_format)
+                
+                # Calculate total difference percentage
+                total_prev = all_data['PREV MONTH SALE'].sum()
+                total_curr = all_data['MTD Value'].sum()
+                total_diff = (total_curr - total_prev) / total_prev if total_prev != 0 else 0
+                worksheet.write_number(total_row, 8, total_diff, percentage_format)
+                
+                # Calculate total ASP
+                total_asp = total_curr / all_data['MTD Count'].sum() if all_data['MTD Count'].sum() != 0 else 0
+                worksheet.write_number(total_row, 9, total_asp, currency_format)
 
                 # RBM SHEETS
                 for rbm in report_df['RBM'].dropna().unique():
                     rbm_data = report_df[report_df['RBM'] == rbm].sort_values('MTD Value', ascending=False)
                     worksheet_name = rbm[:31] if len(rbm) > 31 else rbm
                     rbm_ws = workbook.add_worksheet(worksheet_name)
-
-                    # Dynamically adjust column widths for RBM sheets
-                    rbm_column_widths = {}
-                    for col_num, header in enumerate(headers):
-                        max_len = max(rbm_data['Store'].astype(str).map(len).max(), len(header)) + 2
-                        rbm_column_widths[col_num] = max_len if max_len < 30 else 30
-                    for col_num, width in rbm_column_widths.items():
-                        rbm_ws.set_column(col_num, col_num, width)
-
-                    rbm_ws.merge_range(0, 0, 0, 9, f" {rbm} - Sales Performance Report", formats['rbm_title'])
-                    rbm_ws.merge_range(1, 0, 1, 9, f"Report Period: {datetime.now().strftime('%B %Y')} | Generated: {datetime.now().strftime('%d %B %Y')}", formats['rbm_subtitle'])
-
-                    rbm_total_stores = len(rbm_data)
-                    rbm_active_stores = len(rbm_data[rbm_data['FTD Count'] > 0])
-                    rbm_inactive_stores = rbm_total_stores - rbm_active_stores
-                    rbm_total_amount = rbm_data['MTD Value'].sum()
-
-                    rbm_ws.merge_range(3, 0, 3, 1, "📈 PERFORMANCE OVERVIEW", formats['rbm_summary'])
-                    rbm_ws.merge_range(3, 2, 3, 9, f"Total Stores: {rbm_total_stores} | Active: {rbm_active_stores} | Inactive: {rbm_inactive_stores} | Total Revenue: ₹{rbm_total_amount:,}", formats['rbm_summary'])
-
-                    if len(rbm_data) > 0:
-                        best_performer = rbm_data.iloc[0]
-                        rbm_ws.merge_range(4, 0, 4, 9, f"🥇 Best Performer: {best_performer['Store']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
-
-                    # Headers
-                    for col, header in enumerate(headers):
-                        rbm_ws.write(6, col, header, formats['rbm_header'])
-
-                    for row_idx, (_, row) in enumerate(rbm_data.iterrows(), start=7):
-                        is_alternate = (row_idx - 7) % 2 == 1
-                        store_format = formats['rbm_store_name_alt'] if is_alternate else formats['rbm_store_name']
-                        rbm_ws.write(row_idx, 0, row['Store'], store_format)
-
-                        data_format = formats['rbm_data_alternate'] if is_alternate else formats['rbm_data_normal']
-                        rbm_ws.write(row_idx, 1, int(row['FTD Count']), data_format)
-                        rbm_ws.write(row_idx, 2, int(row['FTD Value']), data_format)
-
-                        ftd_conversion = row['FTD Value Conversion']
-                        conversion_format = formats['rbm_conversion_format_alt'] if is_alternate else formats['rbm_conversion_format']
-                        if ftd_conversion < 2:
-                            rbm_ws.write(row_idx, 3, ftd_conversion / 100, formats['rbm_conversion_low'])
+                    
+                    # Set column widths
+                    rbm_ws.set_column('A:A', 25)  # Store name
+                    rbm_ws.set_column('B:J', 15)  # Other columns
+                    
+                    # Write headers
+                    rbm_ws.write_row(0, 0, headers, header_format)
+                    
+                    # Write data
+                    for row_num, (_, row) in enumerate(rbm_data.iterrows(), start=1):
+                        rbm_ws.write_string(row_num, 0, row['Store'], store_name_format)
+                        rbm_ws.write_number(row_num, 1, row['FTD Count'], number_format)
+                        rbm_ws.write_number(row_num, 2, row['FTD Value'], number_format)
+                        
+                        if row['FTD Value Conversion'] < 2:
+                            rbm_ws.write_number(row_num, 3, row['FTD Value Conversion']/100, low_conversion_format)
                         else:
-                            rbm_ws.write(row_idx, 3, ftd_conversion / 100, conversion_format)
-
-                        rbm_ws.write(row_idx, 4, int(row['MTD Count']), data_format)
-                        rbm_ws.write(row_idx, 5, int(row['MTD Value']), data_format)
-
-                        mtd_conversion = row['MTD Value Conversion']
-                        if mtd_conversion < 2:
-                            rbm_ws.write(row_idx, 6, mtd_conversion / 100, formats['rbm_conversion_low'])
+                            rbm_ws.write_number(row_num, 3, row['FTD Value Conversion']/100, percentage_format)
+                            
+                        rbm_ws.write_number(row_num, 4, row['MTD Count'], number_format)
+                        rbm_ws.write_number(row_num, 5, row['MTD Value'], number_format)
+                        
+                        if row['MTD Value Conversion'] < 2:
+                            rbm_ws.write_number(row_num, 6, row['MTD Value Conversion']/100, low_conversion_format)
                         else:
-                            rbm_ws.write(row_idx, 6, mtd_conversion / 100, conversion_format)
-
-                        rbm_ws.write(row_idx, 7, int(row['PREV MONTH SALE']), data_format)
-                        rbm_ws.write(row_idx, 8, f"{row['DIFF %']}%", data_format)
-
-                        asp_format = formats['asp_format_alt'] if is_alternate else formats['asp_format']
-                        rbm_ws.write(row_idx, 9, row['ASP'], asp_format)
-
-                    total_row = len(rbm_data) + 8
-                    rbm_ws.write(total_row, 0, '🎯 TOTAL', formats['rbm_total_label'])
-                    rbm_ws.write(total_row, 1, rbm_data['FTD Count'].sum(), formats['rbm_total'])
-                    rbm_ws.write(total_row, 2, rbm_data['FTD Value'].sum(), formats['rbm_total'])
-                    rbm_total_ftd_conversion = round((rbm_data['FTD Value'].sum() / rbm_data['Product_FTD_Amount'].sum()) * 100, 2) if rbm_data['Product_FTD_Amount'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 3, rbm_total_ftd_conversion / 100, formats['rbm_conversion_low'] if rbm_total_ftd_conversion < 2 else formats['rbm_total'])
-                    rbm_ws.write(total_row, 4, rbm_data['MTD Count'].sum(), formats['rbm_total'])
-                    rbm_ws.write(total_row, 5, rbm_data['MTD Value'].sum(), formats['rbm_total'])
-                    rbm_total_mtd_conversion = round((rbm_data['MTD Value'].sum() / rbm_data['Product_MTD_Amount'].sum()) * 100, 2) if rbm_data['Product_MTD_Amount'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 6, rbm_total_mtd_conversion / 100, formats['rbm_conversion_low'] if rbm_total_mtd_conversion < 2 else formats['rbm_total'])
-                    rbm_ws.write(total_row, 7, rbm_data['PREV MONTH SALE'].sum(), formats['rbm_total'])
-                    total_prev = rbm_data['PREV MONTH SALE'].sum()
-                    total_curr = rbm_data['MTD Value'].sum()
-                    overall_growth = round(((total_curr - total_prev) / total_prev) * 100, 2) if total_prev != 0 else 0
-                    rbm_ws.write(total_row, 8, f"{overall_growth}%", formats['rbm_total'])
-                    overall_asp = round(total_curr / rbm_data['MTD Count'].sum(), 2) if rbm_data['MTD Count'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 9, overall_asp, formats['asp_total'])
-
-                    insights_row = total_row + 2
-                    if overall_growth > 15:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
-                                         f"📈 Excellent Growth: {overall_growth}% increase from previous month",
-                                         formats['rbm_summary'])
-                    elif overall_growth < 0:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
-                                         f"📉 Needs Attention: {abs(overall_growth)}% decrease from previous month",
-                                         formats['rbm_summary'])
-                    else:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
-                                         f"📊 Stable Performance: Less change from previous month",
-                                         formats['rbm_summary'])
-
-                    insights_row += 1
-                    top_3_stores = rbm_data.head(3)
-                    if len(top_3_stores) > 0:
-                        top_stores_text = " | ".join([f"{store['Store']}: ₹{int(store['MTD Value']):,}"
-                                                    for _, store in top_3_stores.iterrows()])
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
-                                         f"🏆 Top 3 Performers: {top_stores_text}",
-                                         formats['rbm_summary'])
+                            rbm_ws.write_number(row_num, 6, row['MTD Value Conversion']/100, percentage_format)
+                            
+                        rbm_ws.write_number(row_num, 7, row['PREV MONTH SALE'], number_format)
+                        rbm_ws.write_number(row_num, 8, row['DIFF %']/100, percentage_format)
+                        rbm_ws.write_number(row_num, 9, row['ASP'], currency_format)
+                    
+                    # Add totals row
+                    total_row = len(rbm_data) + 1
+                    rbm_ws.write_string(total_row, 0, 'TOTAL', total_format)
+                    rbm_ws.write_formula(total_row, 1, f'=SUM(B2:B{total_row})', total_format)
+                    rbm_ws.write_formula(total_row, 2, f'=SUM(C2:C{total_row})', total_format)
+                    
+                    # Calculate total conversion rates for RBM
+                    rbm_total_ftd_conversion = rbm_data['FTD Value'].sum() / rbm_data['Product_FTD_Amount'].sum() if rbm_data['Product_FTD_Amount'].sum() != 0 else 0
+                    rbm_ws.write_number(total_row, 3, rbm_total_ftd_conversion, 
+                                      low_conversion_format if rbm_total_ftd_conversion < 0.02 else percentage_format)
+                    
+                    rbm_ws.write_formula(total_row, 4, f'=SUM(E2:E{total_row})', total_format)
+                    rbm_ws.write_formula(total_row, 5, f'=SUM(F2:F{total_row})', total_format)
+                    
+                    rbm_total_mtd_conversion = rbm_data['MTD Value'].sum() / rbm_data['Product_MTD_Amount'].sum() if rbm_data['Product_MTD_Amount'].sum() != 0 else 0
+                    rbm_ws.write_number(total_row, 6, rbm_total_mtd_conversion, 
+                                      low_conversion_format if rbm_total_mtd_conversion < 0.02 else percentage_format)
+                    
+                    rbm_ws.write_formula(total_row, 7, f'=SUM(H2:H{total_row})', total_format)
+                    
+                    # Calculate total difference percentage for RBM
+                    rbm_total_prev = rbm_data['PREV MONTH SALE'].sum()
+                    rbm_total_curr = rbm_data['MTD Value'].sum()
+                    rbm_total_diff = (rbm_total_curr - rbm_total_prev) / rbm_total_prev if rbm_total_prev != 0 else 0
+                    rbm_ws.write_number(total_row, 8, rbm_total_diff, percentage_format)
+                    
+                    # Calculate total ASP for RBM
+                    rbm_total_asp = rbm_total_curr / rbm_data['MTD Count'].sum() if rbm_data['MTD Count'].sum() != 0 else 0
+                    rbm_ws.write_number(total_row, 9, rbm_total_asp, currency_format)
 
             excel_output.seek(0)
             st.success("✅ Excel report generated successfully!")
