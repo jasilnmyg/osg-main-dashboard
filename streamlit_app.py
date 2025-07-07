@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import re
-from datetime import datetime
-import pytz
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, PageBreak, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
@@ -21,6 +19,7 @@ from openpyxl.utils import get_column_letter
 import time
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+import pytz
 
 st.set_page_config(
     page_title="OSG DASHBOARD",
@@ -506,6 +505,10 @@ with tab1:
                     })
                 }
 
+                # Set IST timezone
+                ist = pytz.timezone('Asia/Kolkata')
+                ist_time = datetime.now(ist)
+
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
                 worksheet = workbook.add_worksheet("All Stores")
@@ -525,8 +528,6 @@ with tab1:
                     worksheet.set_column(i, i, column_widths[i])
 
                 worksheet.merge_range(0, 0, 0, len(headers) - 1, "OSG All Stores Sales Report", formats['title'])
-                ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime.now(ist)
                 worksheet.merge_range(1, 0, 1, len(headers) - 1, f"Report Generated: {ist_time.strftime('%d %B %Y %I:%M %p IST')}", formats['subtitle'])
 
                 total_stores = len(all_data)
@@ -614,7 +615,7 @@ with tab1:
                         rbm_ws.set_column(i, i, rbm_column_widths[i])
 
                     rbm_ws.merge_range(0, 0, 0, len(headers) - 1, f" {rbm} - Sales Performance Report", formats['rbm_title'])
-                    rbm_ws.merge_range(1, 0, 1, len(headers) - 1, f"Report Period: {datetime.now().strftime('%B %Y')} | Generated: {datetime.now().strftime('%d %B %Y %I:%M %p IST')}", formats['rbm_subtitle'])
+                    rbm_ws.merge_range(1, 0, 1, len(headers) - 1, f"Report Period: {ist_time.strftime('%B %Y')} | Generated: {ist_time.strftime('%d %B %Y %I:%M %p IST')}", formats['rbm_subtitle'])
 
                     rbm_total_stores = len(rbm_data)
                     rbm_active_stores = len(rbm_data[rbm_data['FTD Count'] > 0])
