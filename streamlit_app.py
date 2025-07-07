@@ -410,8 +410,9 @@ with tab1:
                         'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['danger_red'], 'num_format': '0.00%', 'bold': True
                     }),
                     'conversion_green': workbook.add_format({
-                        'font_size': 10, 'font_color': colors_palette['success_green'], 'bg_color': colors_palette['light_green'],
-                        'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['success_green'], 'num_format': '0.00%'
+                        'bold': True, 'font_size': 10, 'font_color': colors_palette['success_green'],
+                        'bg_color': colors_palette['light_green'], 'align': 'center', 'valign': 'vcenter',
+                        'border': 1, 'border_color': colors_palette['success_green'], 'num_format': '0.00%'
                     }),
                     'conversion_format': workbook.add_format({
                         'font_size': 10, 'align': 'center', 'valign': 'vcenter',
@@ -467,8 +468,9 @@ with tab1:
                         'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['danger_red'], 'num_format': '0.00%', 'bold': True
                     }),
                     'rbm_conversion_green': workbook.add_format({
-                        'font_size': 10, 'font_color': colors_palette['success_green'], 'bg_color': colors_palette['light_green'],
-                        'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['success_green'], 'num_format': '0.00%'
+                        'bold': True, 'font_size': 10, 'font_color': colors_palette['success_green'],
+                        'bg_color': colors_palette['light_green'], 'align': 'center', 'valign': 'vcenter',
+                        'border': 1, 'border_color': colors_palette['success_green'], 'num_format': '0.00%'
                     }),
                     'rbm_conversion_format': workbook.add_format({
                         'font_size': 10, 'align': 'center', 'valign': 'vcenter',
@@ -515,7 +517,7 @@ with tab1:
 
                 # Set IST timezone
                 ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime(2025, 7, 7, 17, 6, tzinfo=ist)  # 05:06 PM IST, July 07, 2025
+                ist_time = datetime(2025, 7, 7, 17, 13, tzinfo=ist)  # 05:13 PM IST, July 07, 2025
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
