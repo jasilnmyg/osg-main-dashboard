@@ -310,9 +310,15 @@ with tab1:
                                   .merge(prev_mtd_agg, on='Store', how='left') \
                                   .merge(rbm_df[['Store', 'RBM']], on='Store', how='left')
 
+            # Ensure all required columns exist
+            required_columns = ['Store', 'FTD Count', 'FTD Value', 'Product_FTD_Amount', 'MTD Count', 'MTD Value', 'Product_MTD_Amount', 'PREV MONTH SALE', 'RBM']
+            for col in required_columns:
+                if col not in report_df.columns:
+                    report_df[col] = 0
+            report_df = report_df.rename(columns={'Store': 'Store Name'})  # Rename 'Store' to 'Store Name'
+
             # Fill NaN values and ensure integer types
-            report_df[['FTD Count', 'FTD Value', 'MTD Count', 'MTD Value', 'Product_FTD_Count', 'Product_FTD_Amount', 'Product_MTD_Count', 'Product_MTD_Amount']] = report_df[['FTD Count', 'FTD Value', 'MTD Count', 'MTD Value', 'Product_FTD_Count', 'Product_FTD_Amount', 'Product_MTD_Count', 'Product_MTD_Amount']].fillna(0).astype(int)
-            report_df['PREV MONTH SALE'] = report_df['PREV MONTH SALE'].fillna(0).astype(int)
+            report_df[['FTD Count', 'FTD Value', 'MTD Count', 'MTD Value', 'Product_FTD_Count', 'Product_FTD_Amount', 'Product_MTD_Count', 'Product_MTD_Amount', 'PREV MONTH SALE']] = report_df[['FTD Count', 'FTD Value', 'MTD Count', 'MTD Value', 'Product_FTD_Count', 'Product_FTD_Amount', 'Product_MTD_Count', 'Product_MTD_Amount', 'PREV MONTH SALE']].fillna(0).astype(int)
 
             # Calculate difference percentage
             report_df['DIFF %'] = report_df.apply(
@@ -502,11 +508,19 @@ with tab1:
                 all_data = report_df.sort_values('MTD Value', ascending=False)
                 worksheet = workbook.add_worksheet("All Stores")
 
-                # Dynamically adjust column widths with better precision
+                # Dynamically adjust column widths with error handling
                 headers = ['Store Name', 'FTD Count', 'FTD Value', 'FTD Value Conversion', 'MTD Count', 'MTD Value', 'MTD Value Conversion', 'PREV MONTH SALE', 'DIFF %', 'ASP']
-                column_widths = {i: max(max(all_data[headers[i]].astype(str).map(len).max() if i == 0 else all_data[headers[i]].map(lambda x: len(str(x))).max(), len(headers[i])) + 2, 10) for i in range(len(headers))}
-                for col_num, width in column_widths.items():
-                    worksheet.set_column(col_num, col_num, width)
+                column_widths = {}
+                for i in range(len(headers)):
+                    try:
+                        if i == 0:
+                            max_len = max(all_data[headers[i]].astype(str).map(len).max(), len(headers[i])) + 2
+                        else:
+                            max_len = max(all_data[headers[i]].map(lambda x: len(str(x))).max() if headers[i] in all_data.columns else 0, len(headers[i])) + 2
+                        column_widths[i] = max(max_len, 10)
+                    except KeyError:
+                        column_widths[i] = len(headers[i]) + 2  # Default width if column is missing
+                    worksheet.set_column(i, i, column_widths[i])
 
                 worksheet.merge_range(0, 0, 0, len(headers) - 1, "OSG All Stores Sales Report", formats['title'])
                 worksheet.merge_range(1, 0, 1, len(headers) - 1, f"Report Generated: {datetime.now().strftime('%d %B %Y %I:%M %p IST')}", formats['subtitle'])
@@ -525,7 +539,7 @@ with tab1:
                 for row_idx, (_, row) in enumerate(all_data.iterrows(), start=6):
                     is_alternate = (row_idx - 6) % 2 == 1
                     store_format = formats['data_store_name_alt'] if is_alternate else formats['data_store_name']
-                    worksheet.write(row_idx, 0, row['Store'], store_format)
+                    worksheet.write(row_idx, 0, row['Store Name'], store_format)
 
                     data_format = formats['data_alternate'] if is_alternate else formats['data_normal']
                     worksheet.write(row_idx, 1, int(row['FTD Count']), data_format)
@@ -573,7 +587,7 @@ with tab1:
                     top_performer = all_data.iloc[0]
                     insights_row = total_row + 2
                     worksheet.merge_range(insights_row, 0, insights_row, len(headers) - 1,
-                                        f"🏆 Top Performer: {top_performer['Store']} (₹{int(top_performer['MTD Value']):,})",
+                                        f"🏆 Top Performer: {top_performer['Store Name']} (₹{int(top_performer['MTD Value']):,})",
                                         formats['data_normal'])
 
                 # RBM SHEETS
@@ -583,9 +597,17 @@ with tab1:
                     rbm_ws = workbook.add_worksheet(worksheet_name)
 
                     # Dynamically adjust column widths for RBM sheets
-                    rbm_column_widths = {i: max(max(rbm_data[headers[i]].astype(str).map(len).max() if i == 0 else rbm_data[headers[i]].map(lambda x: len(str(x))).max(), len(headers[i])) + 2, 10) for i in range(len(headers))}
-                    for col_num, width in rbm_column_widths.items():
-                        rbm_ws.set_column(col_num, col_num, width)
+                    rbm_column_widths = {}
+                    for i in range(len(headers)):
+                        try:
+                            if i == 0:
+                                max_len = max(rbm_data[headers[i]].astype(str).map(len).max(), len(headers[i])) + 2
+                            else:
+                                max_len = max(rbm_data[headers[i]].map(lambda x: len(str(x))).max() if headers[i] in rbm_data.columns else 0, len(headers[i])) + 2
+                            rbm_column_widths[i] = max(max_len, 10)
+                        except KeyError:
+                            rbm_column_widths[i] = len(headers[i]) + 2
+                        rbm_ws.set_column(i, i, rbm_column_widths[i])
 
                     rbm_ws.merge_range(0, 0, 0, len(headers) - 1, f" {rbm} - Sales Performance Report", formats['rbm_title'])
                     rbm_ws.merge_range(1, 0, 1, len(headers) - 1, f"Report Period: {datetime.now().strftime('%B %Y')} | Generated: {datetime.now().strftime('%d %B %Y %I:%M %p IST')}", formats['rbm_subtitle'])
@@ -600,7 +622,7 @@ with tab1:
 
                     if len(rbm_data) > 0:
                         best_performer = rbm_data.iloc[0]
-                        rbm_ws.merge_range(4, 0, 4, len(headers) - 1, f"🥇 Best Performer: {best_performer['Store']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
+                        rbm_ws.merge_range(4, 0, 4, len(headers) - 1, f"🥇 Best Performer: {best_performer['Store Name']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
 
                     # Headers
                     for col, header in enumerate(headers):
@@ -609,7 +631,7 @@ with tab1:
                     for row_idx, (_, row) in enumerate(rbm_data.iterrows(), start=7):
                         is_alternate = (row_idx - 7) % 2 == 1
                         store_format = formats['rbm_store_name_alt'] if is_alternate else formats['rbm_store_name']
-                        rbm_ws.write(row_idx, 0, row['Store'], store_format)
+                        rbm_ws.write(row_idx, 0, row['Store Name'], store_format)
 
                         data_format = formats['rbm_data_alternate'] if is_alternate else formats['rbm_data_normal']
                         rbm_ws.write(row_idx, 1, int(row['FTD Count']), data_format)
@@ -672,7 +694,7 @@ with tab1:
                     insights_row += 1
                     top_3_stores = rbm_data.head(3)
                     if len(top_3_stores) > 0:
-                        top_stores_text = " | ".join([f"{store['Store']}: ₹{int(store['MTD Value']):,}"
+                        top_stores_text = " | ".join([f"{store['Store Name']}: ₹{int(store['MTD Value']):,}"
                                                     for _, store in top_3_stores.iterrows()])
                         rbm_ws.merge_range(insights_row, 0, insights_row, len(headers) - 1,
                                          f"🏆 Top 3 Performers: {top_stores_text}",
