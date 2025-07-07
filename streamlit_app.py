@@ -181,7 +181,7 @@ body {
 }
 
 .header {
-    color: #2c3e50;
+    color: #2c3e10;
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 1rem;
@@ -409,6 +409,10 @@ with tab1:
                         'font_size': 10, 'font_color': colors_palette['danger_red'], 'bg_color': colors_palette['light_red'],
                         'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['danger_red'], 'num_format': '0.00%', 'bold': True
                     }),
+                    'conversion_green': workbook.add_format({
+                        'font_size': 10, 'font_color': colors_palette['white'], 'bg_color': colors_palette['mint_green'],
+                        'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['mint_green'], 'num_format': '0.00%'
+                    }),
                     'conversion_format': workbook.add_format({
                         'font_size': 10, 'align': 'center', 'valign': 'vcenter',
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'num_format': '0.00%'
@@ -462,6 +466,10 @@ with tab1:
                         'font_size': 10, 'font_color': colors_palette['danger_red'], 'bg_color': colors_palette['light_red'],
                         'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['danger_red'], 'num_format': '0.00%', 'bold': True
                     }),
+                    'rbm_conversion_green': workbook.add_format({
+                        'font_size': 10, 'font_color': colors_palette['white'], 'bg_color': colors_palette['mint_green'],
+                        'align': 'center', 'valign': 'vcenter', 'border': 1, 'border_color': colors_palette['mint_green'], 'num_format': '0.00%'
+                    }),
                     'rbm_conversion_format': workbook.add_format({
                         'font_size': 10, 'align': 'center', 'valign': 'vcenter',
                         'border': 1, 'border_color': colors_palette['neutral_gray'], 'num_format': '0.00%'
@@ -507,7 +515,7 @@ with tab1:
 
                 # Set IST timezone
                 ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime(2025, 7, 7, 16, 48, tzinfo=ist)  # 04:48 PM IST, July 07, 2025
+                ist_time = datetime(2025, 7, 7, 17, 1, tzinfo=ist)  # 05:01 PM IST, July 07, 2025
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
@@ -552,19 +560,29 @@ with tab1:
 
                     ftd_conversion = row['FTD Value Conversion']
                     conversion_format = formats['conversion_format_alt'] if is_alternate else formats['conversion_format']
-                    if ftd_conversion < 2:
-                        worksheet.write(row_idx, 3, ftd_conversion / 100, formats['conversion_low'])
+                    if row_idx != len(all_data) + 6:  # Exclude total row
+                        if ftd_conversion > 2:
+                            worksheet.write(row_idx, 3, ftd_conversion / 100, formats['conversion_green'])
+                        elif ftd_conversion < 2:
+                            worksheet.write(row_idx, 3, ftd_conversion / 100, formats['conversion_low'])
+                        else:
+                            worksheet.write(row_idx, 3, ftd_conversion / 100, conversion_format)
                     else:
-                        worksheet.write(row_idx, 3, ftd_conversion / 100, conversion_format)
+                        worksheet.write(row_idx, 3, f"{ftd_conversion}%", formats['total_row'])
 
                     worksheet.write(row_idx, 4, int(row['MTD Count']), data_format)
                     worksheet.write(row_idx, 5, int(row['MTD Value']), data_format)
 
                     mtd_conversion = row['MTD Value Conversion']
-                    if mtd_conversion < 2:
-                        worksheet.write(row_idx, 6, mtd_conversion / 100, formats['conversion_low'])
+                    if row_idx != len(all_data) + 6:  # Exclude total row
+                        if mtd_conversion > 2:
+                            worksheet.write(row_idx, 6, mtd_conversion / 100, formats['conversion_green'])
+                        elif mtd_conversion < 2:
+                            worksheet.write(row_idx, 6, mtd_conversion / 100, formats['conversion_low'])
+                        else:
+                            worksheet.write(row_idx, 6, mtd_conversion / 100, conversion_format)
                     else:
-                        worksheet.write(row_idx, 6, mtd_conversion / 100, conversion_format)
+                        worksheet.write(row_idx, 6, f"{mtd_conversion}%", formats['total_row'])
 
                     worksheet.write(row_idx, 7, int(row['PREV MONTH SALE']), data_format)
                     worksheet.write(row_idx, 8, f"{row['DIFF %']}%", data_format)
@@ -644,19 +662,29 @@ with tab1:
 
                         ftd_conversion = row['FTD Value Conversion']
                         conversion_format = formats['rbm_conversion_format_alt'] if is_alternate else formats['rbm_conversion_format']
-                        if ftd_conversion < 2:
-                            rbm_ws.write(row_idx, 3, ftd_conversion / 100, formats['rbm_conversion_low'])
+                        if row_idx != len(rbm_data) + 7:  # Exclude total row
+                            if ftd_conversion > 2:
+                                rbm_ws.write(row_idx, 3, ftd_conversion / 100, formats['rbm_conversion_green'])
+                            elif ftd_conversion < 2:
+                                rbm_ws.write(row_idx, 3, ftd_conversion / 100, formats['rbm_conversion_low'])
+                            else:
+                                rbm_ws.write(row_idx, 3, ftd_conversion / 100, conversion_format)
                         else:
-                            rbm_ws.write(row_idx, 3, ftd_conversion / 100, conversion_format)
+                            rbm_ws.write(row_idx, 3, f"{ftd_conversion}%", formats['rbm_total'])
 
                         rbm_ws.write(row_idx, 4, int(row['MTD Count']), data_format)
                         rbm_ws.write(row_idx, 5, int(row['MTD Value']), data_format)
 
                         mtd_conversion = row['MTD Value Conversion']
-                        if mtd_conversion < 2:
-                            rbm_ws.write(row_idx, 6, mtd_conversion / 100, formats['rbm_conversion_low'])
+                        if row_idx != len(rbm_data) + 7:  # Exclude total row
+                            if mtd_conversion > 2:
+                                rbm_ws.write(row_idx, 6, mtd_conversion / 100, formats['rbm_conversion_green'])
+                            elif mtd_conversion < 2:
+                                rbm_ws.write(row_idx, 6, mtd_conversion / 100, formats['rbm_conversion_low'])
+                            else:
+                                rbm_ws.write(row_idx, 6, mtd_conversion / 100, conversion_format)
                         else:
-                            rbm_ws.write(row_idx, 6, mtd_conversion / 100, conversion_format)
+                            rbm_ws.write(row_idx, 6, f"{mtd_conversion}%", formats['rbm_total'])
 
                         rbm_ws.write(row_idx, 7, int(row['PREV MONTH SALE']), data_format)
                         rbm_ws.write(row_idx, 8, f"{row['DIFF %']}%", data_format)
