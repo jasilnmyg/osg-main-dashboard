@@ -420,7 +420,7 @@ with tab1:
                     'total_row': workbook.add_format({
                         'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['accent_purple'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['accent_purple']
+                        'border': 2, 'border_color': colors_palette['accent_purple'], 'num_format': '0.00'
                     }),
                     'total_label': workbook.add_format({
                         'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
@@ -473,7 +473,7 @@ with tab1:
                     'rbm_total': workbook.add_format({
                         'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
                         'bg_color': colors_palette['mint_green'], 'align': 'center', 'valign': 'vcenter',
-                        'border': 2, 'border_color': colors_palette['mint_green']
+                        'border': 2, 'border_color': colors_palette['mint_green'], 'num_format': '0.00%'
                     }),
                     'rbm_total_label': workbook.add_format({
                         'bold': True, 'font_size': 12, 'font_color': colors_palette['white'],
