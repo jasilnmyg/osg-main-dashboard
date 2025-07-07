@@ -502,23 +502,26 @@ with tab1:
                 all_data = report_df.sort_values('MTD Value', ascending=False)
                 worksheet = workbook.add_worksheet("All Stores")
 
-                # Updated column widths without BDM
-                column_widths = [25, 12, 15, 12, 15, 15, 12, 12]
-                for i, width in enumerate(column_widths):
-                    worksheet.set_column(i, i, width)
+                # Dynamically adjust column widths based on content
+                column_widths = {}
+                headers = ['Store Name', 'FTD Count', 'FTD Value', 'FTD Value Conversion', 'MTD Count', 'MTD Value', 'MTD Value Conversion', 'PREV MONTH SALE', 'DIFF %', 'ASP']
+                for col_num, header in enumerate(headers):
+                    max_len = max(all_data['Store'].astype(str).map(len).max(), len(header)) + 2
+                    column_widths[col_num] = max_len if max_len < 30 else 30  # Cap width at 30
+                for col_num, width in column_widths.items():
+                    worksheet.set_column(col_num, col_num, width)
 
-                worksheet.merge_range(0, 0, 0, 7, "OSG All Stores Sales Report", formats['title'])
-                worksheet.merge_range(1, 0, 1, 7, f"Report Generated: {datetime.now().strftime('%d %B %Y')}", formats['subtitle'])
+                worksheet.merge_range(0, 0, 0, 9, "OSG All Stores Sales Report", formats['title'])
+                worksheet.merge_range(1, 0, 1, 9, f"Report Generated: {datetime.now().strftime('%d %B %Y')}", formats['subtitle'])
 
                 total_stores = len(all_data)
                 active_stores = len(all_data[all_data['FTD Count'] > 0])
                 inactive_stores = total_stores - active_stores
 
                 worksheet.merge_range(3, 0, 3, 1, "📊 SUMMARY", formats['header_secondary'])
-                worksheet.merge_range(3, 2, 3, 7, f"Total: {total_stores} | Active: {active_stores} | Inactive: {inactive_stores}", formats['data_normal'])
+                worksheet.merge_range(3, 2, 3, 9, f"Total: {total_stores} | Active: {active_stores} | Inactive: {inactive_stores}", formats['data_normal'])
 
-                # Updated headers without BDM
-                headers = ['Store Name', 'FTD Count', 'FTD Value', 'FTD Value Conversion', 'MTD Count', 'MTD Value', 'MTD Value Conversion', 'PREV MONTH SALE', 'DIFF %', 'ASP']
+                # Headers
                 for col, header in enumerate(headers):
                     worksheet.write(5, col, header, formats['header_main'])
 
@@ -572,7 +575,7 @@ with tab1:
                 if len(all_data) > 0:
                     top_performer = all_data.iloc[0]
                     insights_row = total_row + 2
-                    worksheet.merge_range(insights_row, 0, insights_row, 7,
+                    worksheet.merge_range(insights_row, 0, insights_row, 9,
                                         f"🏆 Top Performer: {top_performer['Store']} (₹{int(top_performer['MTD Value']):,})",
                                         formats['data_normal'])
 
@@ -582,13 +585,16 @@ with tab1:
                     worksheet_name = rbm[:31] if len(rbm) > 31 else rbm
                     rbm_ws = workbook.add_worksheet(worksheet_name)
 
-                    # Updated column widths without BDM
-                    rbm_column_widths = [25, 12, 15, 15, 12, 15, 15, 12]
-                    for i, width in enumerate(rbm_column_widths):
-                        rbm_ws.set_column(i, i, width)
+                    # Dynamically adjust column widths for RBM sheets
+                    rbm_column_widths = {}
+                    for col_num, header in enumerate(headers):
+                        max_len = max(rbm_data['Store'].astype(str).map(len).max(), len(header)) + 2
+                        rbm_column_widths[col_num] = max_len if max_len < 30 else 30
+                    for col_num, width in rbm_column_widths.items():
+                        rbm_ws.set_column(col_num, col_num, width)
 
-                    rbm_ws.merge_range(0, 0, 0, 7, f" {rbm} - Sales Performance Report", formats['rbm_title'])
-                    rbm_ws.merge_range(1, 0, 1, 7, f"Report Period: {datetime.now().strftime('%B %Y')} | Generated: {datetime.now().strftime('%d %B %Y')}", formats['rbm_subtitle'])
+                    rbm_ws.merge_range(0, 0, 0, 9, f" {rbm} - Sales Performance Report", formats['rbm_title'])
+                    rbm_ws.merge_range(1, 0, 1, 9, f"Report Period: {datetime.now().strftime('%B %Y')} | Generated: {datetime.now().strftime('%d %B %Y')}", formats['rbm_subtitle'])
 
                     rbm_total_stores = len(rbm_data)
                     rbm_active_stores = len(rbm_data[rbm_data['FTD Count'] > 0])
@@ -596,14 +602,13 @@ with tab1:
                     rbm_total_amount = rbm_data['MTD Value'].sum()
 
                     rbm_ws.merge_range(3, 0, 3, 1, "📈 PERFORMANCE OVERVIEW", formats['rbm_summary'])
-                    rbm_ws.merge_range(3, 2, 3, 7, f"Total Stores: {rbm_total_stores} | Active: {rbm_active_stores} | Inactive: {rbm_inactive_stores} | Total Revenue: ₹{rbm_total_amount:,}", formats['rbm_summary'])
+                    rbm_ws.merge_range(3, 2, 3, 9, f"Total Stores: {rbm_total_stores} | Active: {rbm_active_stores} | Inactive: {rbm_inactive_stores} | Total Revenue: ₹{rbm_total_amount:,}", formats['rbm_summary'])
 
                     if len(rbm_data) > 0:
                         best_performer = rbm_data.iloc[0]
-                        rbm_ws.merge_range(4, 0, 4, 7, f"🥇 Best Performer: {best_performer['Store']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
+                        rbm_ws.merge_range(4, 0, 4, 9, f"🥇 Best Performer: {best_performer['Store']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
 
-                    # Updated headers without BDM
-                    headers = ['Store Name', 'FTD Count', 'FTD Value', 'FTD Value Conversion', 'MTD Count', 'MTD Value', 'MTD Value Conversion', 'PREV MONTH SALE', 'DIFF %', 'ASP']
+                    # Headers
                     for col, header in enumerate(headers):
                         rbm_ws.write(6, col, header, formats['rbm_header'])
 
@@ -658,15 +663,15 @@ with tab1:
 
                     insights_row = total_row + 2
                     if overall_growth > 15:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 7,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
                                          f"📈 Excellent Growth: {overall_growth}% increase from previous month",
                                          formats['rbm_summary'])
                     elif overall_growth < 0:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 7,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
                                          f"📉 Needs Attention: {abs(overall_growth)}% decrease from previous month",
                                          formats['rbm_summary'])
                     else:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 7,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
                                          f"📊 Stable Performance: Less change from previous month",
                                          formats['rbm_summary'])
 
@@ -675,7 +680,7 @@ with tab1:
                     if len(top_3_stores) > 0:
                         top_stores_text = " | ".join([f"{store['Store']}: ₹{int(store['MTD Value']):,}"
                                                     for _, store in top_3_stores.iterrows()])
-                        rbm_ws.merge_range(insights_row, 0, insights_row, 7,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, 9,
                                          f"🏆 Top 3 Performers: {top_stores_text}",
                                          formats['rbm_summary'])
 
