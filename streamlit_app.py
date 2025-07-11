@@ -420,7 +420,7 @@ with tab1:
                     }),
                     'conversion_format_alt': workbook.add_format({
                         'font_size': 10, 'align': 'center', 'valign': 'vcenter',
-                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_gray'], 'num_format': '0.00%'
+                        'border': 1, 'border_color': colors_palette['neutral_gray'], 'bg_color': colors_palette['light_royal'], 'num_format': '0.00%'
                     }),
                     'total_row': workbook.add_format({
                         'bold': True, 'font_size': 11, 'font_color': colors_palette['white'],
@@ -517,7 +517,7 @@ with tab1:
 
                 # Set IST timezone
                 ist = pytz.timezone('Asia/Kolkata')
-                ist_time = datetime(2025, 7, 7, 17, 13, tzinfo=ist)  # 05:13 PM IST, July 07, 2025
+                ist_time = datetime.now(ist)  # Use current date and time in IST
 
                 # ALL STORES SHEET
                 all_data = report_df.sort_values('MTD Value', ascending=False)
@@ -616,6 +616,7 @@ with tab1:
                                         formats['data_normal'])
 
                 # RBM SHEETS
+                rbm_headers = ['Store Name', 'MTD Value Conversion', 'FTD Value Conversion', 'MTD Count', 'FTD Count', 'MTD Value', 'FTD Value', 'PREV MONTH SALE', 'DIFF %', 'ASP']
                 for rbm in report_df['RBM'].dropna().unique():
                     rbm_data = report_df[report_df['RBM'] == rbm].sort_values('MTD Value', ascending=False)
                     worksheet_name = rbm[:31] if len(rbm) > 31 else rbm
@@ -623,19 +624,19 @@ with tab1:
 
                     # Dynamically adjust column widths for RBM sheets
                     rbm_column_widths = {}
-                    for i in range(len(headers)):
+                    for i in range(len(rbm_headers)):
                         try:
                             if i == 0:
-                                max_len = max(rbm_data[headers[i]].astype(str).map(len).max(), len(headers[i])) + 2
+                                max_len = max(rbm_data[rbm_headers[i]].astype(str).map(len).max(), len(rbm_headers[i])) + 2
                             else:
-                                max_len = max(rbm_data[headers[i]].map(lambda x: len(str(x))).max() if headers[i] in rbm_data.columns else 0, len(headers[i])) + 2
+                                max_len = max(rbm_data[rbm_headers[i]].map(lambda x: len(str(x))).max() if rbm_headers[i] in rbm_data.columns else 0, len(rbm_headers[i])) + 2
                             rbm_column_widths[i] = max(max_len, 10)
                         except KeyError:
-                            rbm_column_widths[i] = len(headers[i]) + 2
+                            rbm_column_widths[i] = len(rbm_headers[i]) + 2
                         rbm_ws.set_column(i, i, rbm_column_widths[i])
 
-                    rbm_ws.merge_range(0, 0, 0, len(headers) - 1, f" {rbm} - Sales Performance Report", formats['rbm_title'])
-                    rbm_ws.merge_range(1, 0, 1, len(headers) - 1, f"Report Period: {ist_time.strftime('%B %Y')} | Generated: {ist_time.strftime('%d %B %Y %I:%M %p IST')}", formats['rbm_subtitle'])
+                    rbm_ws.merge_range(0, 0, 0, len(rbm_headers) - 1, f" {rbm} - Sales Performance Report", formats['rbm_title'])
+                    rbm_ws.merge_range(1, 0, 1, len(rbm_headers) - 1, f"Report Period: {ist_time.strftime('%B %Y')} | Generated: {ist_time.strftime('%d %B %Y %I:%M %p IST')}", formats['rbm_subtitle'])
 
                     rbm_total_stores = len(rbm_data)
                     rbm_active_stores = len(rbm_data[rbm_data['FTD Count'] > 0])
@@ -643,14 +644,14 @@ with tab1:
                     rbm_total_amount = rbm_data['MTD Value'].sum()
 
                     rbm_ws.merge_range(3, 0, 3, 1, "📈 PERFORMANCE OVERVIEW", formats['rbm_summary'])
-                    rbm_ws.merge_range(3, 2, 3, len(headers) - 1, f"Total Stores: {rbm_total_stores} | Active: {rbm_active_stores} | Inactive: {rbm_inactive_stores} | Total Revenue: ₹{rbm_total_amount:,}", formats['rbm_summary'])
+                    rbm_ws.merge_range(3, 2, 3, len(rbm_headers) - 1, f"Total Stores: {rbm_total_stores} | Active: {rbm_active_stores} | Inactive: {rbm_inactive_stores} | Total Revenue: ₹{rbm_total_amount:,}", formats['rbm_summary'])
 
                     if len(rbm_data) > 0:
                         best_performer = rbm_data.iloc[0]
-                        rbm_ws.merge_range(4, 0, 4, len(headers) - 1, f"🥇 Best Performer: {best_performer['Store Name']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
+                        rbm_ws.merge_range(4, 0, 4, len(rbm_headers) - 1, f"🥇 Best Performer: {best_performer['Store Name']} - ₹{int(best_performer['MTD Value']):,}", formats['rbm_performance'])
 
                     # Headers
-                    for col, header in enumerate(headers):
+                    for col, header in enumerate(rbm_headers):
                         rbm_ws.write(6, col, header, formats['rbm_header'])
 
                     for row_idx, (_, row) in enumerate(rbm_data.iterrows(), start=7):
@@ -659,35 +660,33 @@ with tab1:
                         rbm_ws.write(row_idx, 0, row['Store Name'], store_format)
 
                         data_format = formats['rbm_data_alternate'] if is_alternate else formats['rbm_data_normal']
-                        rbm_ws.write(row_idx, 1, int(row['FTD Count']), data_format)
-                        rbm_ws.write(row_idx, 2, int(row['FTD Value']), data_format)
-
-                        ftd_conversion = row['FTD Value Conversion']
+                        mtd_conversion = row['MTD Value Conversion']
                         conversion_format = formats['rbm_conversion_format_alt'] if is_alternate else formats['rbm_conversion_format']
                         if row_idx != len(rbm_data) + 7:  # Exclude total row
-                            if ftd_conversion > 2:
-                                rbm_ws.write(row_idx, 3, ftd_conversion / 100, formats['rbm_conversion_green'])
-                            elif ftd_conversion < 2:
-                                rbm_ws.write(row_idx, 3, ftd_conversion / 100, formats['rbm_conversion_low'])
-                            else:
-                                rbm_ws.write(row_idx, 3, ftd_conversion / 100, conversion_format)
-                        else:
-                            rbm_ws.write(row_idx, 3, f"{ftd_conversion}%", formats['rbm_total'])
-
-                        rbm_ws.write(row_idx, 4, int(row['MTD Count']), data_format)
-                        rbm_ws.write(row_idx, 5, int(row['MTD Value']), data_format)
-
-                        mtd_conversion = row['MTD Value Conversion']
-                        if row_idx != len(rbm_data) + 7:  # Exclude total row
                             if mtd_conversion > 2:
-                                rbm_ws.write(row_idx, 6, mtd_conversion / 100, formats['rbm_conversion_green'])
+                                rbm_ws.write(row_idx, 1, mtd_conversion / 100, formats['rbm_conversion_green'])
                             elif mtd_conversion < 2:
-                                rbm_ws.write(row_idx, 6, mtd_conversion / 100, formats['rbm_conversion_low'])
+                                rbm_ws.write(row_idx, 1, mtd_conversion / 100, formats['rbm_conversion_low'])
                             else:
-                                rbm_ws.write(row_idx, 6, mtd_conversion / 100, conversion_format)
+                                rbm_ws.write(row_idx, 1, mtd_conversion / 100, conversion_format)
                         else:
-                            rbm_ws.write(row_idx, 6, f"{mtd_conversion}%", formats['rbm_total'])
+                            rbm_ws.write(row_idx, 1, f"{mtd_conversion}%", formats['rbm_total'])
 
+                        ftd_conversion = row['FTD Value Conversion']
+                        if row_idx != len(rbm_data) + 7:  # Exclude total row
+                            if ftd_conversion > 2:
+                                rbm_ws.write(row_idx, 2, ftd_conversion / 100, formats['rbm_conversion_green'])
+                            elif ftd_conversion < 2:
+                                rbm_ws.write(row_idx, 2, ftd_conversion / 100, formats['rbm_conversion_low'])
+                            else:
+                                rbm_ws.write(row_idx, 2, ftd_conversion / 100, conversion_format)
+                        else:
+                            rbm_ws.write(row_idx, 2, f"{ftd_conversion}%", formats['rbm_total'])
+
+                        rbm_ws.write(row_idx, 3, int(row['MTD Count']), data_format)
+                        rbm_ws.write(row_idx, 4, int(row['FTD Count']), data_format)
+                        rbm_ws.write(row_idx, 5, int(row['MTD Value']), data_format)
+                        rbm_ws.write(row_idx, 6, int(row['FTD Value']), data_format)
                         rbm_ws.write(row_idx, 7, int(row['PREV MONTH SALE']), data_format)
                         rbm_ws.write(row_idx, 8, f"{row['DIFF %']}%", data_format)
 
@@ -696,33 +695,33 @@ with tab1:
 
                     total_row = len(rbm_data) + 8
                     rbm_ws.write(total_row, 0, '🎯 TOTAL', formats['rbm_total_label'])
-                    rbm_ws.write(total_row, 1, rbm_data['FTD Count'].sum(), formats['rbm_total'])
-                    rbm_ws.write(total_row, 2, rbm_data['FTD Value'].sum(), formats['rbm_total'])
-                    rbm_total_ftd_conversion = round((rbm_data['FTD Value'].sum() / rbm_data['Product_FTD_Amount'].sum()) * 100, 2) if rbm_data['Product_FTD_Amount'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 3, f"{rbm_total_ftd_conversion}%", formats['rbm_total'])
-                    rbm_ws.write(total_row, 4, rbm_data['MTD Count'].sum(), formats['rbm_total'])
-                    rbm_ws.write(total_row, 5, rbm_data['MTD Value'].sum(), formats['rbm_total'])
                     rbm_total_mtd_conversion = round((rbm_data['MTD Value'].sum() / rbm_data['Product_MTD_Amount'].sum()) * 100, 2) if rbm_data['Product_MTD_Amount'].sum() != 0 else 0
-                    rbm_ws.write(total_row, 6, f"{rbm_total_mtd_conversion}%", formats['rbm_total'])
+                    rbm_ws.write(total_row, 1, f"{rbm_total_mtd_conversion}%", formats['rbm_total'])
+                    rbm_total_ftd_conversion = round((rbm_data['FTD Value'].sum() / rbm_data['Product_FTD_Amount'].sum()) * 100, 2) if rbm_data['Product_FTD_Amount'].sum() != 0 else 0
+                    rbm_ws.write(total_row, 2, f"{rbm_total_ftd_conversion}%", formats['rbm_total'])
+                    rbm_ws.write(total_row, 3, rbm_data['MTD Count'].sum(), formats['rbm_total'])
+                    rbm_ws.write(total_row, 4, rbm_data['FTD Count'].sum(), formats['rbm_total'])
+                    rbm_ws.write(total_row, 5, rbm_data['MTD Value'].sum(), formats['rbm_total'])
+                    rbm_ws.write(total_row, 6, rbm_data['FTD Value'].sum(), formats['rbm_total'])
                     rbm_ws.write(total_row, 7, rbm_data['PREV MONTH SALE'].sum(), formats['rbm_total'])
                     total_prev = rbm_data['PREV MONTH SALE'].sum()
                     total_curr = rbm_data['MTD Value'].sum()
                     overall_growth = round(((total_curr - total_prev) / total_prev) * 100, 2) if total_prev != 0 else 0
                     rbm_ws.write(total_row, 8, f"{overall_growth}%", formats['rbm_total'])
-                    overall_asp = round(total_curr / rbm_data['MTD Count'].sum(), 2) if rbm_data['MTD Count'].sum() != 0 else 0
+                    overall_asp = round(rbm_data['MTD Value'].sum() / rbm_data['MTD Count'].sum(), 2) if rbm_data['MTD Count'].sum() != 0 else 0
                     rbm_ws.write(total_row, 9, overall_asp, formats['asp_total'])
 
                     insights_row = total_row + 2
                     if overall_growth > 15:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, len(headers) - 1,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, len(rbm_headers) - 1,
                                          f"📈 Excellent Growth: {overall_growth}% increase from previous month",
                                          formats['rbm_summary'])
                     elif overall_growth < 0:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, len(headers) - 1,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, len(rbm_headers) - 1,
                                          f"📉 Needs Attention: {abs(overall_growth)}% decrease from previous month",
                                          formats['rbm_summary'])
                     else:
-                        rbm_ws.merge_range(insights_row, 0, insights_row, len(headers) - 1,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, len(rbm_headers) - 1,
                                          f"📊 Stable Performance: Less change from previous month",
                                          formats['rbm_summary'])
 
@@ -731,7 +730,7 @@ with tab1:
                     if len(top_3_stores) > 0:
                         top_stores_text = " | ".join([f"{store['Store Name']}: ₹{int(store['MTD Value']):,}"
                                                     for _, store in top_3_stores.iterrows()])
-                        rbm_ws.merge_range(insights_row, 0, insights_row, len(headers) - 1,
+                        rbm_ws.merge_range(insights_row, 0, insights_row, len(rbm_headers) - 1,
                                          f"🏆 Top 3 Performers: {top_stores_text}",
                                          formats['rbm_summary'])
 
